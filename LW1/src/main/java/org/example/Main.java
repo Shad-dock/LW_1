@@ -4,17 +4,19 @@ import org.example.model.Mission;
 import org.example.parser.IMissionParser;
 import org.example.parser.JSONParser;
 import org.example.parser.TxtParser;
+import org.example.parser.XmlParser;
 
 import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
-        String filePath = ("C:/Users/LEGION/Desktop/данные/Данные о миссиях. Вариант 1/Mission A.json");
+        String filePath = ("C:/Users/LEGION/Desktop/данные/Данные о миссиях. Вариант 1/Mission A.xml");
         File file = new File(filePath);
 
         try {
             //IMissionParser parser = new TxtParser();
-            IMissionParser parser = new JSONParser();
+            //IMissionParser parser = new JSONParser();
+            IMissionParser parser = new XmlParser();
             Mission mission = parser.parse(file);
             mission.printReport();
 
