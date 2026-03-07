@@ -144,7 +144,7 @@ public class Mission {
 
         System.out.println("CURSE " + curse);
         System.out.println("Participants: ");
-        if(!sorcerers.isEmpty()) {
+        if(sorcerers != null && !sorcerers.isEmpty()) {
             for (int i = 0; i < sorcerers.size(); i++) {
                 System.out.println(i + ". " + sorcerers.get(i));
             }
@@ -153,7 +153,7 @@ public class Mission {
         }
 
         System.out.println("Techniques: ");
-        if(!techniques.isEmpty()) {
+        if(techniques != null && !techniques.isEmpty()) {
             for (int i = 0; i < techniques.size(); i++) {
                 System.out.println(i + ". " + techniques.get(i));
             }
@@ -164,7 +164,7 @@ public class Mission {
         System.out.println("Outcome: " + getValue(outcome));
         System.out.println("Damage Cost " + damageCost);
 
-        if(!notes.isEmpty()){
+        if(notes != null && !notes.isEmpty() ){
             System.out.println("-".repeat(45));
             System.out.println("Notes");
             System.out.println(notes);
