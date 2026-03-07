@@ -130,12 +130,45 @@ public class Mission {
         }
     }
 
+    private String getValue(String value){
+        return !value.isEmpty() ? value : "не указано";
+    }
+
     public void printReport(){
         System.out.println("-".repeat(60));
         System.out.println("Отчет о миссии");
         System.out.println("-".repeat(60));
+        System.out.println("Mission ID " + getValue(missionId));
+        System.out.println("Date " + getValue(date));
+        System.out.println("Location " + getValue(location));
 
-        //отчет
+        System.out.println("CURSE " + curse);
+        System.out.println("Participants: ");
+        if(!sorcerers.isEmpty()) {
+            for (int i = 0; i < sorcerers.size(); i++) {
+                System.out.println(i + ". " + sorcerers.get(i));
+            }
+        }else {
+            System.out.println("Не указаны");
+        }
 
+        System.out.println("Techniques: ");
+        if(!techniques.isEmpty()) {
+            for (int i = 0; i < techniques.size(); i++) {
+                System.out.println(i + ". " + techniques.get(i));
+            }
+        }else {
+            System.out.println("Не указаны");
+        }
+
+        System.out.println("Outcome: " + getValue(outcome));
+        System.out.println("Damage Cost " + damageCost);
+
+        if(!notes.isEmpty()){
+            System.out.println("-".repeat(45));
+            System.out.println("Notes");
+            System.out.println(notes);
+        }
+        System.out.println("-".repeat(60));
     }
 }
