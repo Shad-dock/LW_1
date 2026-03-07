@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.model.Mission;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class JSONParser implements IMissionParser{
     private ObjectMapper mapper = new ObjectMapper();
@@ -45,9 +47,27 @@ public class JSONParser implements IMissionParser{
                 technique.setDamage(jnt.has("damage") ? jnt.get("damage").asInt() : 0);
                 mission.addTechnique(technique);
             }
+            findAndSetNotes(root, mission);
         }
 
         return mission;
+    }
+    private void findAndSetNotes(JsonNode root, Mission mission){
+        ArrayList<String> fieldNames = new ArrayList<>();
+        Iterator<String> fieldIterator = root.fieldNames();
+        while (fieldIterator.hasNext()) {
+            String fieldName = fieldIterator.next();
+            fieldNames.add(fieldName);
+        }
+        int techniquesIndex = fieldNames.indexOf("techniques");
+        if (techniquesIndex >= 0 && techniquesIndex < fieldNames.size() - 1) {
+            String nextField = fieldNames.get(techniquesIndex + 1);
+            JsonNode nextFieldValue = root.get(nextField);
+
+            if (nextFieldValue != null && nextFieldValue.isTextual()) {
+                mission.setNotes(nextFieldValue.asText());
+            }
+        }
     }
 
     @Override
