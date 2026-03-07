@@ -10,12 +10,13 @@ public class ParserFactory {
     static {
         parsers.add(new TxtParser());
         parsers.add(new JSONParser());
-        parsers.add(new JSONParser());
+        parsers.add(new XmlParser());
     }
 
     public static IMissionParser getParser(File file){
         for (IMissionParser imp : parsers){
             if(imp.support(file)){
+                System.out.println(imp.support(file));
                 return imp;
             }
         }

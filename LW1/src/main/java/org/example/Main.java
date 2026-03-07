@@ -5,24 +5,14 @@ import org.example.parser.IMissionParser;
 import org.example.parser.JSONParser;
 import org.example.parser.TxtParser;
 import org.example.parser.XmlParser;
+import org.example.ui.UI;
 
 import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
-        String filePath = ("C:/Users/LEGION/Desktop/данные/Данные о миссиях. Вариант 1/Mission A.xml");
-        File file = new File(filePath);
-
-        try {
-            //IMissionParser parser = new TxtParser();
-            //IMissionParser parser = new JSONParser();
-            IMissionParser parser = new XmlParser();
-            Mission mission = parser.parse(file);
-            mission.printReport();
-
-        } catch (Exception e) {
-            System.out.println("Ошибка при парсинге: " + e.getMessage());
-            e.printStackTrace();
-        }
+        //String filePath = ("C:/Users/LEGION/Desktop/данные/Данные о миссиях. Вариант 1/Mission A.xml");
+        UI ui = new UI();
+        ui.start();
     }
 }
