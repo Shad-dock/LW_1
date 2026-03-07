@@ -4,6 +4,7 @@ import org.example.model.Mission;
 
 import org.w3c.dom.Document ;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -49,7 +50,6 @@ public class XmlParser implements IMissionParser{
             sorcerer.setRank(getElementValue(sorcererEl, "rank"));
             mission.addSorcerer(sorcerer);
         }
-        System.out.println("aaaaaaaaaaaaaaaaaaaa" + sorcererNode.getLength());
 
         NodeList techniqueNodes = doc.getElementsByTagName("technique");
         for(int i = 0; i < techniqueNodes.getLength(); i++){
@@ -66,8 +66,27 @@ public class XmlParser implements IMissionParser{
                 } catch (NumberFormatException e) {}
             }
             mission.addTechnique(technique);
+
         }
+        findAndSetNotes(doc, mission);
         return mission;
+    }
+
+    private void findAndSetNotes(Document doc, Mission mission) {
+        NodeList techniquesList = doc.getElementsByTagName("techniques");
+
+        if (techniquesList.getLength() > 0) {
+            Element techniquesElement = (Element) techniquesList.item(0);
+            Node nextSibling = techniquesElement.getNextSibling();
+
+            while (nextSibling != null && nextSibling.getNodeType() != Node.ELEMENT_NODE) {
+                nextSibling = nextSibling.getNextSibling();
+            }
+
+            if (nextSibling != null) {
+                mission.setNotes(nextSibling.getTextContent());
+            }
+        }
     }
 
     @Override
