@@ -16,7 +16,6 @@ public class ParserFactory {
     public static IMissionParser getParser(File file){
         for (IMissionParser imp : parsers){
             if(imp.support(file)){
-                System.out.println(imp.support(file));
                 return imp;
             }
         }

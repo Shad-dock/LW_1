@@ -34,23 +34,23 @@ public class UI {
     }
 
     private void printMenu(){
-        System.out.println("-".repeat(60));
-        System.out.println("Анализатор миссий");
-        System.out.println("-".repeat(60));
+        System.out.println("-".repeat(85));
+        System.out.println(" ".repeat(30) + "Анализатор миссий");
+        System.out.println("-".repeat(85));
         System.out.println("1.Загрузить файл миссии");
         System.out.println("2.Выход");
         System.out.println("Выберите действие: ");
     }
 
     private void processFile(){
-        System.out.println("Введите путь к файлу ");
+        System.out.println("Введите путь к файлу: ");
         String filePath = scanner.nextLine();
 
         File file = new File(filePath);
-        System.out.println("Введенный путь: " + filePath);
-        System.out.println("Абсолютный путь: " + file.getAbsolutePath());
-        System.out.println("Файл существует: " + file.exists());
-        System.out.println("Это директория: " + file.isDirectory());
+//        System.out.println("Введенный путь: " + filePath);
+//        System.out.println("Абсолютный путь: " + file.getAbsolutePath());
+//        System.out.println("Файл существует: " + file.exists());
+//        System.out.println("Это директория: " + file.isDirectory());
         if(!file.exists()){
             System.out.println("Файл не найден");
             return;
