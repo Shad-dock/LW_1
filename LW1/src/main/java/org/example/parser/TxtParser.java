@@ -9,13 +9,18 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TxtParser implements IMissionParser{
+    private Map<Integer, String> techOwnerMap = new HashMap<>();
+
     @Override
     public Mission parse(File file) throws Exception{
         Mission mission = new Mission();
         Mission.Curse curse = new Mission.Curse();
         StringBuilder extraNotes = new StringBuilder();
+        techOwnerMap.clear();
 
         try(BufferedReader reader = new BufferedReader(
                 new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))){
@@ -89,10 +94,24 @@ public class TxtParser implements IMissionParser{
             }
         }
         mission.setCurse(curse);
+        link(mission);
         mission.setNotes(extraNotes.toString());
 
         return mission;
 
+    }
+
+    private void link(Mission mission){
+        for(int i = 0; i<mission.getTechniques().size(); i++){
+            Mission.Technique technique = mission.getTechniques().get(i);
+            String ownerName = techOwnerMap.get(i);
+            for (Mission.Sorcerer sorcerer : mission.getSorcerers()){
+                if(ownerName.equals(sorcerer.getName())){
+                    technique.setOwner(sorcerer);
+                    break;
+                }
+            }
+        }
     }
 
     @Override
@@ -125,7 +144,8 @@ public class TxtParser implements IMissionParser{
         }else if(key.endsWith("].type")){
             technique.setType(value);
         } else if(key.endsWith("].owner")){
-            technique.setOwner(value);
+            //technique.setOwner(value);
+            techOwnerMap.put(idx, value);
         } else if(key.endsWith("].damage")){
             try {
                 technique.setDamage(Integer.parseInt(value));

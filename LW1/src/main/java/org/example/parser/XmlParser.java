@@ -10,14 +10,19 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class XmlParser implements IMissionParser{
+    private Map<Integer, String> techOwnerMap = new HashMap<>();
+
     @Override
     public Mission parse(File file) throws Exception{
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse(file);
         doc.getDocumentElement().normalize();
+        techOwnerMap.clear();
 
         Mission mission = new Mission();
 
@@ -57,7 +62,9 @@ public class XmlParser implements IMissionParser{
             Mission.Technique technique = new Mission.Technique();
             technique.setName(getElementValue(techniqueEl, "name"));
             technique.setType(getElementValue(techniqueEl, "type"));
-            technique.setOwner(getElementValue(techniqueEl, "owner"));
+            //technique.setOwner(getElementValue(techniqueEl, "owner"));
+            String ownerName = getElementValue(techniqueEl, "owner");
+            techOwnerMap.put(i, ownerName);
 
             String damage = getElementValue(techniqueEl, "damage");
             if(damage != null){
@@ -68,8 +75,22 @@ public class XmlParser implements IMissionParser{
             mission.addTechnique(technique);
 
         }
+        link(mission);
         findAndSetNotes(doc, mission);
         return mission;
+    }
+
+    private void link(Mission mission){
+        for(int i = 0; i<mission.getTechniques().size(); i++){
+            Mission.Technique technique = mission.getTechniques().get(i);
+            String ownerName = techOwnerMap.get(i);
+            for (Mission.Sorcerer sorcerer : mission.getSorcerers()){
+                if(ownerName.equals(sorcerer.getName())){
+                    technique.setOwner(sorcerer);
+                    break;
+                }
+            }
+        }
     }
 
     private void findAndSetNotes(Document doc, Mission mission) {
