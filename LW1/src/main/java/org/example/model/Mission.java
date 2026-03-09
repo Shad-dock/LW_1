@@ -103,12 +103,13 @@ public class Mission {
     public static class Technique{
         private String name;
         private String type;
-        private String owner;
+        //private String owner;
+        private Sorcerer owner;
         private int damage;
 
         public Technique() {}
 
-        public Technique(String name, String type, String owner, int damage){
+        public Technique(String name, String type, Sorcerer owner, int damage){
             this.name = name;
             this.type = type;
             this.owner = owner;
@@ -119,14 +120,21 @@ public class Mission {
         public void setName(String name){this.name = name;}
         public String getType(){return type;}
         public void setType(String type){this.type = type;}
-        public String getOwner(){return owner;}
-        public void setOwner(String owner){this.owner = owner;}
+        public Sorcerer getOwner(){return owner;}
+        public void setOwner(Sorcerer owner){this.owner = owner;}
         public int getDamage(){return damage;}
         public void setDamage(int damage){this.damage = damage;}
 
         @Override
         public String toString(){
-            return "Name:" + name + "; Type:" + type + "; Owner:" + owner + "; Damage:" + damage;
+            StringBuilder sb = new StringBuilder();
+            sb.append("Name:").append(name).append("; Type:").append(type).append("; Owner:");
+            if(owner!=null){
+                sb.append(owner.getName());
+            }
+            sb.append("; Damage:").append(damage);
+            return sb.toString();
+            //return "Name:" + name + "; Type:" + type + "; Owner:" + owner + "; Damage:" + damage;
         }
     }
 

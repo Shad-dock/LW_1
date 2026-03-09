@@ -6,14 +6,19 @@ import org.example.model.Mission;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 public class JSONParser implements IMissionParser{
     private ObjectMapper mapper = new ObjectMapper();
+    private Map<Integer, String> techOwnerMap = new HashMap<>();
+
     @Override
     public Mission parse(File file) throws Exception{
         Mission mission = new Mission();
         JsonNode root = mapper.readTree(file);
+        techOwnerMap.clear();
 
         mission.setMissionId(getJsonValue(root, "missionId"));
         mission.setDate(getJsonValue(root, "date"));
@@ -39,19 +44,39 @@ public class JSONParser implements IMissionParser{
         }
 
         if(root.has("techniques")){
+            int idx = 0;
             for(JsonNode jnt : root.get("techniques")){
                 Mission.Technique technique = new Mission.Technique();
                 technique.setName(getJsonValue(jnt, "name"));
                 technique.setType(getJsonValue(jnt, "type"));
-                technique.setOwner(getJsonValue(jnt, "owner"));
+
+                String ownerName = getJsonValue(jnt, "owner");
+                techOwnerMap.put(idx, ownerName);
+                //technique.setOwner(getJsonValue(jnt, "owner"));
                 technique.setDamage(jnt.has("damage") ? jnt.get("damage").asInt() : 0);
                 mission.addTechnique(technique);
+                idx++;
             }
+            link(mission);
             findAndSetNotes(root, mission);
         }
 
         return mission;
     }
+
+    private void link(Mission mission){
+        for(int i = 0; i<mission.getTechniques().size(); i++){
+            Mission.Technique technique = mission.getTechniques().get(i);
+            String ownerName = techOwnerMap.get(i);
+            for (Mission.Sorcerer sorcerer : mission.getSorcerers()){
+                if(ownerName.equals(sorcerer.getName())){
+                    technique.setOwner(sorcerer);
+                    break;
+                }
+            }
+        }
+    }
+
     private void findAndSetNotes(JsonNode root, Mission mission){
         ArrayList<String> fieldNames = new ArrayList<>();
         Iterator<String> fieldIterator = root.fieldNames();
