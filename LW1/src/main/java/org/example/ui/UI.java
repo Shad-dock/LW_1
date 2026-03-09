@@ -21,6 +21,8 @@ public class UI {
 
             if (choice.equals("2")) {
                 System.out.println("Выход..");
+                scanner.close();
+                System.exit(0);
                 break;
             }
 
