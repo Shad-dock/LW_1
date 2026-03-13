@@ -21,7 +21,6 @@ public class TxtParser implements IMissionParser{
         Mission.Curse curse = new Mission.Curse();
         StringBuilder extraNotes = new StringBuilder();
         techOwnerMap.clear();
-
         try(BufferedReader reader = new BufferedReader(
                 new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))){
             String line;
