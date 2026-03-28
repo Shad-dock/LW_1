@@ -2,7 +2,7 @@ package org.example.report;
 
 import org.example.model.Mission;
 
-public class ReportDecorator implements IReport{
+public abstract class ReportDecorator implements IReport{
     protected IReport wrapped;
 
     public ReportDecorator(IReport wrapped){
