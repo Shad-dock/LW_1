@@ -15,6 +15,7 @@ public class Main {
         //String filePath = ("C:/Users/LEGION/Desktop/данные/Данные о миссиях. Вариант 1/Mission A.xml");
 //        UI ui = new UI();
 //        ui.start();
+        //C:/Users/LEGION/Desktop/Mission A.txt
         Chooser ch = new Chooser();
         ch.start();
     }
