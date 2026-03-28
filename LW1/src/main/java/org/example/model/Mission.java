@@ -1,23 +1,31 @@
 package org.example.model;
 
+import org.example.model.blocks.DataBlock;
+import org.example.model.enums.MissionOutcome;
+import org.example.model.enums.SorcererRank;
+
 import java.util.ArrayList;
 
 public class Mission {
     private String missionId;
-    private String title;
+    //private String title;
     private String date;
     private String location;
     private Curse curse;
     private ArrayList<Sorcerer> sorcerers;
     private ArrayList<Technique> techniques;
-    private String outcome;
+    //private String outcome;
+    private MissionOutcome outcome;
     private int damageCost;
-    private String Status;
+    //private String Status;
     private String notes;
+
+    private ArrayList<DataBlock> additionalBlocks;
 
     public Mission(){
         this.sorcerers = new ArrayList<>();
         this.techniques = new ArrayList<>();
+        this.additionalBlocks = new ArrayList<>();
         this.curse = new Curse();
     }
 
@@ -30,8 +38,11 @@ public class Mission {
     public String getLocation() {return location;}
     public void setLocation(String location){this.location = location;}
 
-    public String getOutcome(){return outcome;}
-    public void setOutcome(String outcome){this.outcome = outcome;}
+//    public String getOutcome(){return outcome;}
+//    public void setOutcome(String outcome){this.outcome = outcome;}
+    public MissionOutcome getOutcome(){return outcome;}
+    public void setOutcome(MissionOutcome outcome){this.outcome = outcome;}
+    public void setOutcome(String outcome){this.outcome = MissionOutcome.fromString(outcome);}
 
     public int getDamageCost(){return damageCost;}
     public void setDamageCost(int damageCost){this.damageCost = damageCost;}
@@ -49,6 +60,14 @@ public class Mission {
 
     public String getNotes(){return notes;}
     public void setNotes(String notes){this.notes = notes;}
+
+    public void addDataBlock(DataBlock block) {
+        this.additionalBlocks.add(block);
+    }
+
+    public ArrayList<DataBlock> getDataBlocks() {
+        return additionalBlocks;
+    }
 
     public static class Curse{
         private String name;
@@ -80,19 +99,20 @@ public class Mission {
 
     public static class Sorcerer{
         private String name;
-        private String rank;
+        private SorcererRank rank;
 
         public Sorcerer() {}
 
-        public Sorcerer(String name, String rank){
-            this.name = name;
-            this.rank = rank;
-        }
+//        public Sorcerer(String name, String rank){
+//            this.name = name;
+//            this.rank = rank;
+//        }
 
         public String getName(){return name;}
         public void setName(String name){this.name = name;}
-        public String getRank(){return rank;}
-        public void setRank(String rank){this.rank = rank;}
+        public SorcererRank getRank(){return rank;}
+        public void setRank(SorcererRank rank){this.rank = rank;}
+        public void setRank(String rank){this.rank = SorcererRank.fromString(rank);}
 
         @Override
         public String toString() {
@@ -138,45 +158,47 @@ public class Mission {
         }
     }
 
-    private String getValue(String value){
-        return !value.isEmpty() ? value : "не указано";
-    }
+//    private String getValue(String value){
+//        return !value.isEmpty() ? value : "не указано";
+//    }
+//
+//    public void printReport(){
+//        System.out.println("-".repeat(85));
+//        System.out.println(" ".repeat(30) + "Отчет о миссии");
+//        System.out.println("-".repeat(85));
+//        System.out.println("Mission ID: " + getValue(missionId));
+//        System.out.println("Date: " + getValue(date));
+//        System.out.println("Location: " + getValue(location));
+//
+//        System.out.println("Curse: " + curse);
+//        System.out.println("Participants: ");
+//        if(sorcerers != null && !sorcerers.isEmpty()) {
+//            for (int i = 0; i < sorcerers.size(); i++) {
+//                System.out.println((i+1) + ". " + sorcerers.get(i));
+//            }
+//        }else {
+//            System.out.println("Не указаны");
+//        }
+//
+//        System.out.println("Techniques: ");
+//        if(techniques != null && !techniques.isEmpty()) {
+//            for (int i = 0; i < techniques.size(); i++) {
+//                System.out.println((i+1) + ". " + techniques.get(i));
+//            }
+//        }else {
+//            System.out.println("Не указаны");
+//        }
+//
+//        System.out.println("Outcome: " + getValue(outcome));
+//        System.out.println("Damage Cost: " + damageCost);
+//
+//        if(notes != null && !notes.isEmpty() ){
+//            System.out.println("-".repeat(45));
+//            System.out.println(" ".repeat(15) + "Notes");
+//            System.out.println(notes);
+//        }
+//        System.out.println("-".repeat(85));
+//    }
 
-    public void printReport(){
-        System.out.println("-".repeat(85));
-        System.out.println(" ".repeat(30) + "Отчет о миссии");
-        System.out.println("-".repeat(85));
-        System.out.println("Mission ID: " + getValue(missionId));
-        System.out.println("Date: " + getValue(date));
-        System.out.println("Location: " + getValue(location));
 
-        System.out.println("Curse: " + curse);
-        System.out.println("Participants: ");
-        if(sorcerers != null && !sorcerers.isEmpty()) {
-            for (int i = 0; i < sorcerers.size(); i++) {
-                System.out.println((i+1) + ". " + sorcerers.get(i));
-            }
-        }else {
-            System.out.println("Не указаны");
-        }
-
-        System.out.println("Techniques: ");
-        if(techniques != null && !techniques.isEmpty()) {
-            for (int i = 0; i < techniques.size(); i++) {
-                System.out.println((i+1) + ". " + techniques.get(i));
-            }
-        }else {
-            System.out.println("Не указаны");
-        }
-
-        System.out.println("Outcome: " + getValue(outcome));
-        System.out.println("Damage Cost: " + damageCost);
-
-        if(notes != null && !notes.isEmpty() ){
-            System.out.println("-".repeat(45));
-            System.out.println(" ".repeat(15) + "Notes");
-            System.out.println(notes);
-        }
-        System.out.println("-".repeat(85));
-    }
 }
