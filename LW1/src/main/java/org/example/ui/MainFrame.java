@@ -146,7 +146,7 @@ public class MainFrame extends JFrame {
         }
         areaTechniques.setText(sb.toString());
 
-        txtOutcome.setText(nullSafe(mission.getOutcome()));
+        //txtOutcome.setText(nullSafe(mission.getOutcome()));
         txtDamageCost.setText(String.valueOf(mission.getDamageCost()));
         areaNotes.setText(nullSafe(mission.getNotes()));
     }

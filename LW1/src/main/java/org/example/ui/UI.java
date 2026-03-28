@@ -1,18 +1,39 @@
 package org.example.ui;
 
 import org.example.model.Mission;
+import org.example.model.blocks.DataBlock;
+import org.example.observer.LoggerObserver;
+import org.example.observer.MissionEventManager;
 import org.example.parser.IMissionParser;
 import org.example.parser.ParserFactory;
+import org.example.report.IReport;
+import org.example.report.RiskDecorator;
+import org.example.report.SimpleReport;
+import org.example.report.StatsDecorator;
+import org.example.validator.DateValidator;
+import org.example.validator.MissionValidator;
+import org.example.validator.Validator;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class UI {
     private Scanner scanner;
+    private MissionEventManager eventManager;
 
     public UI(){
         this.scanner = new Scanner(System.in);
+        this.eventManager = new MissionEventManager();
+
+        eventManager.addObserver(new LoggerObserver());
     }
+
+    public UI(MissionEventManager eventManager) {
+        this.scanner = new Scanner(System.in);
+        this.eventManager = eventManager;
+    }
+
 
     public void start(){
         while (true){
@@ -59,14 +80,73 @@ public class UI {
         }
 
         try{
+            eventManager.notifyFileLoadStarted(file);
             IMissionParser parser = ParserFactory.getParser(file);
             Mission mission = parser.parse(file);
+            eventManager.notifyParseComplete(mission);
             System.out.println("Файл загружен");
-            mission.printReport();
+            //mission.printReport();
+
+            Validator validator = new MissionValidator();
+            validator.setNext(new DateValidator());
+
+            ArrayList<String> errors = validator.validate(mission);
+
+            if (!errors.isEmpty()) {
+                System.out.println("Найдены проблемы: ");
+                for (String err : errors) {
+                    System.out.println(" " + err);
+                }
+            }
+
+            demoComposite(mission);
+
+            System.out.println("Выберите тип отчета:");
+            System.out.println("1.Базовый");
+            System.out.println("2.Со статистикой");
+            System.out.println("3.С анализом рисков");
+            System.out.println("4.Полный(статистика + риски)");
+            System.out.print("Выбор: ");
+            String reportChoice = scanner.nextLine();
+            IReport report = buildReport(reportChoice);
+            System.out.println(report.generate(mission));
+
+
         }catch(IllegalArgumentException e){
             System.out.println(e.getMessage());
         } catch (Exception e) {
             System.out.println("Ошибка при обработке файла " + e.getMessage());
+        }
+        System.out.println("Нажмите Enter для продолжения..");
+        scanner.nextLine();
+    }
+
+    private IReport buildReport(String choice) {
+        IReport base = new SimpleReport();
+
+        switch (choice) {
+            case "2":
+                return new StatsDecorator(base);
+            case "3":
+                return new RiskDecorator(base);
+            case "4":
+                return new RiskDecorator(new StatsDecorator(base));
+            default:
+                return base;
+        }
+    }
+
+    private void demoComposite(Mission mission) {
+        System.out.println("ДЕМОНСТРАЦИЯ PATTERN COMPOSITE:");
+
+        ArrayList<DataBlock> blocks = mission.getDataBlocks();
+        if (blocks.isEmpty()) {
+            System.out.println("Дополнительных блоков нет");
+        } else {
+            System.out.println("Дополнительные блоки данных:");
+            for (DataBlock block : blocks) {
+                System.out.println("  " + block.getBlockName() + ": " + block.getSummary());
+            }
         }
     }
 }

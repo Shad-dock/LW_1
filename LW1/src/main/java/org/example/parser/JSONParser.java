@@ -3,6 +3,8 @@ package org.example.parser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.model.Mission;
+import org.example.model.blocks.CurseBlock;
+import org.example.model.blocks.EconomicAssessmentBlock;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,11 +14,12 @@ import java.util.Map;
 
 public class JSONParser implements IMissionParser{
     private ObjectMapper mapper = new ObjectMapper();
+    Mission mission = new Mission();
     private Map<Integer, String> techOwnerMap = new HashMap<>();
 
     @Override
     public Mission parse(File file) throws Exception{
-        Mission mission = new Mission();
+        //Mission mission = new Mission();
         JsonNode root = mapper.readTree(file);
         techOwnerMap.clear();
 
@@ -28,10 +31,13 @@ public class JSONParser implements IMissionParser{
 
         if(root.has("curse")){
             JsonNode curseNode = root.get("curse");
-            Mission.Curse curse = new Mission.Curse();
+            CurseBlock curse = new CurseBlock();
+            //Mission.Curse curse = new Mission.Curse();
             curse.setName(getJsonValue(curseNode, "name"));
             curse.setThreatLevel(getJsonValue(curseNode, "threatLevel"));
-            mission.setCurse(curse);
+            mission.addDataBlock(curse);
+            System.out.println("[DEBUG] Добавлен блок curse");
+            //mission.setCurse(curse);
         }
 
         if(root.has("sorcerers")){
@@ -60,8 +66,26 @@ public class JSONParser implements IMissionParser{
             link(mission);
             findAndSetNotes(root, mission);
         }
+        parseEconomicAssessment(root); //пример
 
         return mission;
+    }
+
+    private void parseEconomicAssessment(JsonNode root) {
+        if (root.has("economicAssessment")) {
+            JsonNode econ = root.get("economicAssessment");
+            EconomicAssessmentBlock block = new EconomicAssessmentBlock();
+
+            if (econ.has("totalDamageCost")) {
+                block.setTotalDamageCost(econ.get("totalDamageCost").asInt());
+            }
+            if (econ.has("recoveryEstimateDays")) {
+                block.setRecoveryDays(econ.get("recoveryEstimateDays").asInt());
+            }
+
+            mission.addDataBlock(block);
+            System.out.println("[DEBUG] Добавлен блок economicAssessment");
+        }
     }
 
     private void link(Mission mission){

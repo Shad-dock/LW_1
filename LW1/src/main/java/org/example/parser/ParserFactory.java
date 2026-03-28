@@ -21,4 +21,8 @@ public class ParserFactory {
         }
         throw new IllegalArgumentException("Неподдерживаемый формамт файла");
     }
+
+    public static void registerParser(IMissionParser parser){
+        parsers.add(parser);
+    }
 }

@@ -19,12 +19,13 @@ public class Chooser {
                     UI ui = new UI();
                     ui.start();
                     break;
-                case"2":
-                    SwingUtilities.invokeLater(() -> {
-                        MainFrame frame = new MainFrame();
-                        frame.setVisible(true);
-                    });
-                    return;
+                //переписать gui
+//                case"2":
+//                    SwingUtilities.invokeLater(() -> {
+//                        MainFrame frame = new MainFrame();
+//                        frame.setVisible(true);
+//                    });
+//                    return;
                 case "3":
                     System.out.println("Выход..");
                     scanner.close();
