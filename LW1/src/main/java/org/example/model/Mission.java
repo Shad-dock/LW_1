@@ -69,6 +69,16 @@ public class Mission {
         return additionalBlocks;
     }
 
+    public DataBlock getBlock(String blockName) {
+        for (DataBlock block : additionalBlocks) {
+            if (block.getBlockName().equals(blockName)) {
+                return block;
+            }
+        }
+        return null;
+    }
+
+
     public static class Curse{
         private String name;
         private String threatLevel;

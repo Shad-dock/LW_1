@@ -6,10 +6,7 @@ import org.example.observer.LoggerObserver;
 import org.example.observer.MissionEventManager;
 import org.example.parser.IMissionParser;
 import org.example.parser.ParserFactory;
-import org.example.report.IReport;
-import org.example.report.RiskDecorator;
-import org.example.report.SimpleReport;
-import org.example.report.StatsDecorator;
+import org.example.report.*;
 import org.example.validator.DateValidator;
 import org.example.validator.MissionValidator;
 import org.example.validator.Validator;
@@ -106,6 +103,7 @@ public class UI {
             System.out.println("2.Со статистикой");
             System.out.println("3.С анализом рисков");
             System.out.println("4.Полный(статистика + риски)");
+            System.out.println("5.Полный");
             System.out.print("Выбор: ");
             String reportChoice = scanner.nextLine();
             IReport report = buildReport(reportChoice);
@@ -131,6 +129,8 @@ public class UI {
                 return new RiskDecorator(base);
             case "4":
                 return new RiskDecorator(new StatsDecorator(base));
+            case "5":
+                return new DetailedReport();
             default:
                 return base;
         }
