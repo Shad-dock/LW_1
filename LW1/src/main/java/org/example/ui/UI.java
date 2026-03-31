@@ -7,6 +7,7 @@ import org.example.observer.MissionEventManager;
 import org.example.parser.IMissionParser;
 import org.example.parser.ParserFactory;
 import org.example.report.*;
+import org.example.validator.DamageCostValidator;
 import org.example.validator.DateValidator;
 import org.example.validator.MissionValidator;
 import org.example.validator.Validator;
@@ -86,6 +87,7 @@ public class UI {
 
             Validator validator = new MissionValidator();
             validator.setNext(new DateValidator());
+            validator.setNext(new DamageCostValidator());
 
             ArrayList<String> errors = validator.validate(mission);
 

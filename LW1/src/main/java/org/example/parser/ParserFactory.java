@@ -8,7 +8,8 @@ import java.util.ArrayList;
 public class ParserFactory {
     private static ArrayList<IMissionParser> parsers = new ArrayList<>();
     static {
-        parsers.add(new TxtParser());
+        parsers.add(new TxtSectionParser());
+        parsers.add(new TxtColonParser());
         parsers.add(new JSONParser());
         parsers.add(new XmlParser());
     }
