@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class JSONParser implements IMissionParser{
     private ObjectMapper mapper = new ObjectMapper();
-    Mission mission = new Mission();
+    MissionBuilder builder = new MissionBuilder();
     private Map<Integer, String> techOwnerMap = new HashMap<>();
 
     @Override
@@ -23,11 +23,15 @@ public class JSONParser implements IMissionParser{
         JsonNode root = mapper.readTree(file);
         techOwnerMap.clear();
 
-        mission.setMissionId(getJsonValue(root, "missionId"));
-        mission.setDate(getJsonValue(root, "date"));
-        mission.setLocation(getJsonValue(root, "location"));
-        mission.setOutcome(getJsonValue(root, "outcome"));
-        mission.setDamageCost(root.has("damageCost") ? root.get("damageCost").asInt() : 0);
+        builder.setMissionId(getJsonValue(root, "missionId"));
+        builder.setDate(getJsonValue(root, "date"));
+        builder.setLocation(getJsonValue(root, "location"));
+        builder.setOutcome(getJsonValue(root, "outcome"));
+        builder.setDamageCost(root.has("damageCost") ? root.get("damageCost").asInt() : 0);
+        String notes = getJsonValue(root, "notes");
+        if (notes != null) builder.addNote(notes);
+        String comment = getJsonValue(root, "comment");
+        if (comment != null) builder.addNote(comment);
 
         if(root.has("curse")){
             JsonNode curseNode = root.get("curse");
@@ -35,7 +39,7 @@ public class JSONParser implements IMissionParser{
             //Mission.Curse curse = new Mission.Curse();
             curse.setName(getJsonValue(curseNode, "name"));
             curse.setThreatLevel(getJsonValue(curseNode, "threatLevel"));
-            mission.addDataBlock(curse);
+            builder.addAdditionalBlock(curse);
             System.out.println("[DEBUG] Добавлен блок curse");
             //mission.setCurse(curse);
         }
@@ -43,9 +47,9 @@ public class JSONParser implements IMissionParser{
         if(root.has("sorcerers")){
             for(JsonNode jn : root.get("sorcerers")){
                 Mission.Sorcerer sorcerer = new Mission.Sorcerer();
-                sorcerer.setName(getJsonValue(jn, "name"));
-                sorcerer.setRank(getJsonValue(jn, "rank"));
-                mission.addSorcerer(sorcerer);
+                String name = (getJsonValue(jn, "name"));
+                String rank = (getJsonValue(jn, "rank"));
+                builder.addSorcerer(name, rank);
             }
         }
 
@@ -53,71 +57,65 @@ public class JSONParser implements IMissionParser{
             int idx = 0;
             for(JsonNode jnt : root.get("techniques")){
                 Mission.Technique technique = new Mission.Technique();
-                technique.setName(getJsonValue(jnt, "name"));
-                technique.setType(getJsonValue(jnt, "type"));
+                String name = (getJsonValue(jnt, "name"));
+                String type = (getJsonValue(jnt, "type"));
 
                 String ownerName = getJsonValue(jnt, "owner");
                 techOwnerMap.put(idx, ownerName);
                 //technique.setOwner(getJsonValue(jnt, "owner"));
-                technique.setDamage(jnt.has("damage") ? jnt.get("damage").asInt() : 0);
-                mission.addTechnique(technique);
+                int damage = (jnt.has("damage") ? jnt.get("damage").asInt() : 0);
+                builder.addTechnique(name ,type, ownerName, damage);
                 idx++;
             }
-            link(mission);
-            findAndSetNotes(root, mission);
         }
-        parseEconomicAssessment(root); //пример
+        parseAdditionalBlocks(root, builder); //пример
 
-        return mission;
+        return builder.build();
     }
 
-    private void parseEconomicAssessment(JsonNode root) {
+    private void parseAdditionalBlocks(JsonNode root, MissionBuilder builder) {
+        // EconomicAssessment
         if (root.has("economicAssessment")) {
             JsonNode econ = root.get("economicAssessment");
             EconomicAssessmentBlock block = new EconomicAssessmentBlock();
-
-            if (econ.has("totalDamageCost")) {
-                block.setTotalDamageCost(econ.get("totalDamageCost").asInt());
-            }
-            if (econ.has("recoveryEstimateDays")) {
-                block.setRecoveryDays(econ.get("recoveryEstimateDays").asInt());
-            }
-
-            mission.addDataBlock(block);
-            System.out.println("[DEBUG] Добавлен блок economicAssessment");
+            block.setTotalDamageCost(econ.has("totalDamageCost") ? econ.get("totalDamageCost").asInt() : 0);
+            block.setRecoveryDays(econ.has("recoveryEstimateDays") ? econ.get("recoveryEstimateDays").asInt() : 0);
+            builder.addAdditionalBlock(block);
         }
+
+        // Другие блоки можно добавить здесь
     }
 
-    private void link(Mission mission){
-        for(int i = 0; i<mission.getTechniques().size(); i++){
-            Mission.Technique technique = mission.getTechniques().get(i);
-            String ownerName = techOwnerMap.get(i);
-            for (Mission.Sorcerer sorcerer : mission.getSorcerers()){
-                if(ownerName.equals(sorcerer.getName())){
-                    technique.setOwner(sorcerer);
-                    break;
-                }
-            }
-        }
-    }
+//    private void link(Mission mission){
+//        for(int i = 0; i<mission.getTechniques().size(); i++){
+//            Mission.Technique technique = mission.getTechniques().get(i);
+//            String ownerName = techOwnerMap.get(i);
+//            for (Mission.Sorcerer sorcerer : mission.getSorcerers()){
+//                if(ownerName.equals(sorcerer.getName())){
+//                    technique.setOwner(sorcerer);
+//                    break;
+//                }
+//            }
+//        }
+//    }
 
-    private void findAndSetNotes(JsonNode root, Mission mission){
-        ArrayList<String> fieldNames = new ArrayList<>();
-        Iterator<String> fieldIterator = root.fieldNames();
-        while (fieldIterator.hasNext()) {
-            String fieldName = fieldIterator.next();
-            fieldNames.add(fieldName);
-        }
-        int techniquesIndex = fieldNames.indexOf("techniques");
-        if (techniquesIndex >= 0 && techniquesIndex < fieldNames.size() - 1) {
-            String nextField = fieldNames.get(techniquesIndex + 1);
-            JsonNode nextFieldValue = root.get(nextField);
-
-            if (nextFieldValue != null && nextFieldValue.isTextual()) {
-                mission.setNotes(nextFieldValue.asText());
-            }
-        }
-    }
+//    private void findAndSetNotes(JsonNode root, Mission mission){
+//        ArrayList<String> fieldNames = new ArrayList<>();
+//        Iterator<String> fieldIterator = root.fieldNames();
+//        while (fieldIterator.hasNext()) {
+//            String fieldName = fieldIterator.next();
+//            fieldNames.add(fieldName);
+//        }
+//        int techniquesIndex = fieldNames.indexOf("techniques");
+//        if (techniquesIndex >= 0 && techniquesIndex < fieldNames.size() - 1) {
+//            String nextField = fieldNames.get(techniquesIndex + 1);
+//            JsonNode nextFieldValue = root.get(nextField);
+//
+//            if (nextFieldValue != null && nextFieldValue.isTextual()) {
+//                mission.setNotes(nextFieldValue.asText());
+//            }
+//        }
+//    }
 
     @Override
     public boolean support(File file){
