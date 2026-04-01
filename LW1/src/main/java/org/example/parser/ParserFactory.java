@@ -12,6 +12,8 @@ public class ParserFactory {
         parsers.add(new TxtColonParser());
         parsers.add(new JSONParser());
         parsers.add(new XmlParser());
+        parsers.add(new YamlParser());
+        parsers.add(new StrangeParser());
     }
 
     public static IMissionParser getParser(File file){
