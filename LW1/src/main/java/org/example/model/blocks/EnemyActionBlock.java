@@ -9,6 +9,15 @@ public class EnemyActionBlock implements DataBlock{
     private String attackPatterns;
     private Mobility mobility;
     private EscalationRisk escalationRisk;
+    private String countermeasuresUsed;
+
+    public String getCountermeasuresUsed() {
+        return countermeasuresUsed;
+    }
+
+    public void setCountermeasuresUsed(String countermeasuresUsed) {
+        this.countermeasuresUsed = countermeasuresUsed;
+    }
 
     public String getBehaviorType() {
         return behaviorType;
@@ -59,6 +68,6 @@ public class EnemyActionBlock implements DataBlock{
     public String getSummary(){
         return "Тип поведения: " + behaviorType + ", приоритет целей: " + targetPriority + "\n паттерны атак: " +
                 attackPatterns + ", мобильность: " + mobility +
-                ", риск эскалации: " + escalationRisk;
+                ", риск эскалации: " + escalationRisk + ", контрмеры: " + countermeasuresUsed;
     }
 }

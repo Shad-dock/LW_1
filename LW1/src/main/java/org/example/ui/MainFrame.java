@@ -177,11 +177,16 @@ import org.example.model.Mission;
 import org.example.parser.IMissionParser;
 import org.example.parser.ParserFactory;
 import org.example.report.*;
+import org.example.validator.DamageCostValidator;
+import org.example.validator.DateValidator;
+import org.example.validator.MissionValidator;
+import org.example.validator.Validator;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
 
 public class MainFrame extends JFrame {
     private JTextArea textArea;
@@ -227,7 +232,7 @@ public class MainFrame extends JFrame {
         refreshButton.addActionListener(e -> refreshReport());
         topPanel.add(refreshButton);
 
-        JLabel infoLabel = new JLabel("Поддерживаемые форматы: TXT, JSON, XML");
+        JLabel infoLabel = new JLabel("Поддерживаемые форматы: TXT, JSON, XML, YAML");
         infoLabel.setForeground(Color.GRAY);
         topPanel.add(infoLabel);
 
@@ -245,7 +250,7 @@ public class MainFrame extends JFrame {
 
         fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter(
-                "Файлы миссий (*.txt, *.json, *.xml)", "txt", "json", "xml"));
+                "Файлы миссий (*.txt, *.json, *.xml, *.yaml)", "txt", "json", "xml", "yaml"));
 
         showWelcomeMessage();
     }
@@ -263,6 +268,18 @@ public class MainFrame extends JFrame {
         try {
             IMissionParser parser = ParserFactory.getParser(file);
             currentMission = parser.parse(file);
+            Validator validator = new MissionValidator();
+            validator.setNext(new DateValidator());
+            validator.setNext(new DamageCostValidator());
+
+            ArrayList<String> errors = validator.validate(currentMission);
+
+            if (!errors.isEmpty()) {
+                System.out.println("Найдены проблемы: ");
+                for (String err : errors) {
+                    System.out.println(" " + err);
+                }
+            }
 
             displayReport();
             setTitle("Анализатор миссий - " + file.getName());
@@ -314,7 +331,7 @@ public class MainFrame extends JFrame {
     private void showWelcomeMessage() {
         StringBuilder sb = new StringBuilder();
         sb.append("-".repeat(70)).append("\n");
-        sb.append("АНАЛИЗАТОР МИССИЙ МАГОВ\n");
+        sb.append("             АНАЛИЗАТОР МИССИЙ МАГОВ\n");
         sb.append("-".repeat(70)).append("\n");
         sb.append("1 Нажмите \"Открыть файл\" для загрузки миссии\n");
         sb.append("2.Выберите тип отчета в выпадающем списке\n");
@@ -329,7 +346,7 @@ public class MainFrame extends JFrame {
         sb.append("Детальный - полная информация\n");
         sb.append("Со статистикой - базовая + статистика\n");
         sb.append("Анализ рисков - оценка рисков\n");
-        sb.append("Полный - детальный + статистика + риски\n");
+        //sb.append("Полный - детальный + статистика + риски\n");
         textArea.setText(sb.toString());
     }
 }

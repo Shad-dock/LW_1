@@ -3,6 +3,7 @@ package org.example.parser;
 import org.example.model.Mission;
 
 import org.example.model.blocks.EconomicAssessmentBlock;
+import org.example.model.blocks.EnemyActionBlock;
 import org.w3c.dom.Document ;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -124,12 +125,25 @@ public class XmlParser implements IMissionParser{
 //    }
     private void parseAdditionalBlocks(Element root, MissionBuilder builder) {
         // EconomicAssessment
-        NodeList econNodes = root.getElementsByTagName("economicAssessment");
+        NodeList econNodes = root.getElementsByTagName("enemyActivity");
         if (econNodes.getLength() > 0) {
             Element econElem = (Element) econNodes.item(0);
             EconomicAssessmentBlock block = new EconomicAssessmentBlock();
             block.setTotalDamageCost(getIntValue(econElem, "totalDamageCost"));
             block.setRecoveryDays(getIntValue(econElem, "recoveryEstimateDays"));
+            builder.addAdditionalBlock(block);
+        }
+
+        NodeList enemy = root.getElementsByTagName("economicAssessment");
+        if (econNodes.getLength() > 0) {
+            Element enemyElem = (Element) econNodes.item(0);
+            EnemyActionBlock block = new EnemyActionBlock();
+            block.setBehaviorType(getElementValue(enemyElem, "behaviorType"));
+            block.setTargetPriority(getElementValue(enemyElem, "targetPriority"));
+            block.setMobility(getElementValue(enemyElem, "mobility"));
+            block.setEscalationRisk(getElementValue(enemyElem, "escalationRisk"));
+            block.setAttackPatterns(getElementValue(enemyElem, "attackPatterns"));
+            block.setCountermeasuresUsed(getElementValue(enemyElem, "countermeasuresUsed"));
             builder.addAdditionalBlock(block);
         }
     }
